@@ -4,7 +4,7 @@ import os
 import cv2
 
 # Cargar las imágenes de la carpeta
-image_folder = "C:/Users/simon/OneDrive/Escritorio/script_nd/fotos_alumnos"
+image_folder = "C:/Users/simon/OneDrive/Escritorio/script_nd/Script_Asistencia/fotos_alumnos"
 image_files = os.listdir(image_folder)
 
 # Crear un diccionario vacío para almacenar los nombres ya reconocidos

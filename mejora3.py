@@ -27,7 +27,7 @@ df = pd.DataFrame(columns=['Nombre'])
 
 # Definir la tipografía y tamaño de letra para el nombre
 font = cv2.FONT_HERSHEY_SIMPLEX
-font_scale = 0.60
+font_scale = 0.75
 font_thickness = 3
 
 # Bucle principal
