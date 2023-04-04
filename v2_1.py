@@ -1,10 +1,16 @@
-import cv2
+#!/bin/python3
+
 import face_recognition
 import pandas as pd
 import os
+import cv2
+
+#ESTA VERSION AGREGA UN NIVEL DE TOLERANCIA 
+#esta version reconoce de manera mas precisa los rostros y a una mayor distancia
+
 
 # Cargar las imágenes de la carpeta
-image_folder = "C:/Users/simon/OneDrive/Escritorio/script_nd/fotos_alumnos"
+image_folder = "C:/Users/simon/OneDrive/Escritorio/script_nd/Script_Asistencia/fotos_alumnos"
 image_files = os.listdir(image_folder)
 
 # Crear un diccionario vacío para almacenar los nombres ya reconocidos
@@ -17,13 +23,21 @@ for filename in image_files:
     image = face_recognition.load_image_file(os.path.join(image_folder, filename))
     face_encoding = face_recognition.face_encodings(image)[0]
     known_face_encodings.append(face_encoding)
-    known_face_names.append(filename.split(".")[0].replace("_", " ").title()) # Modificación
+    known_face_names.append(filename.split(".")[0].replace("_", " ").title())
+
+# Aumentar la variable "tolerancia" para hacer el reconocimiento de rostros más preciso
+tolerancia = 0.8
 
 # Inicializar la cámara
 video_capture = cv2.VideoCapture(0)
 
 # Crear un DataFrame vacío para almacenar los nombres reconocidos
 df = pd.DataFrame(columns=['Nombre'])
+
+# Definir la tipografía y tamaño de letra para el nombre
+font = cv2.FONT_HERSHEY_SIMPLEX
+font_scale = 0.75
+font_thickness = 3
 
 # Bucle principal
 while True:
@@ -36,7 +50,7 @@ while True:
 
     # Comparar los rostros encontrados con los rostros previamente cargados
     for face_encoding in face_encodings:
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+        matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=tolerancia)
         name = "Desconocido"
 
         # Si se encuentra una coincidencia, actualizar el nombre
@@ -51,10 +65,9 @@ while True:
                 df = df.append({'Nombre': name}, ignore_index=True)
 
     # Mostrar el resultado en la ventana de la cámara
-    for (top, right, bottom, left), name in zip(face_locations, df['Nombre']):
-        cv2.rectangle(frame, (left, top), (right, bottom), (255, 255, 255), 2) # Modificación
-        cv2.rectangle(frame, (left, top - 20), (right, top), (255, 255, 255), cv2.FILLED) # Modificación
-        cv2.putText(frame, name, (left + 6, top - 6), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1) # Modificación
+    for (top, right, bottom, left) in face_locations:
+        cv2.rectangle(frame, (left, top), (right, bottom), (192, 192, 192), 20)
+        cv2.rectangle(frame, (left, top - 35), (right, top), (192, 192, 192), -1)
 
     # Mostrar el fotograma resultante en la ventana de la cámara
     cv2.imshow('Video', frame)
@@ -62,10 +75,9 @@ while True:
     # Si se presiona la tecla 'q', salir del bucle
     if cv2.waitKey(1) & 0xFF == ord('q'):
         # Guardar el DataFrame en un archivo XLSX
-        filename = "nombres_reconocidos.xlsx"
+        filename = "alumnos_presentes.xlsx"
         full_path = os.path.join(os.getcwd(), filename)
         df.to_excel(full_path, index=False)
         # Liberar la cámara y cerrar las ventanas
         video_capture.release()
         cv2.destroyAllWindows()
-        break

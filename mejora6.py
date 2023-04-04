@@ -30,6 +30,9 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 font_scale = 0.75
 font_thickness = 3
 
+# Definir la tolerancia máxima
+max_tolerance = 0.2
+
 # Bucle principal
 while True:
     # Capturar un fotograma de la cámara
@@ -41,7 +44,7 @@ while True:
 
     # Comparar los rostros encontrados con los rostros previamente cargados
     for face_encoding in face_encodings:
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+        matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=max_tolerance)
         name = "Desconocido"
 
         # Si se encuentra una coincidencia, actualizar el nombre
